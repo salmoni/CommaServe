@@ -1,9 +1,9 @@
 # csv_py_better
-A better (for me!) CSV library than that in the included. 
+A better (for me!) CSV library than that built-in. 
 
 * Multiple delimiters in one file
 * Multiple string delimiters
-* Specify line endings (Unix, Windows, MacOS (old)
+* Specified line endings (Unix, Windows, MacOS (old)
 * Multi-line statements (if a line ending appears within quote delimiters, it's considered part of the cell and NOT a new line
 * Headers can be specified, if so, they are stored in a separate attribute from the data
 * Can start at an arbitrary row (if your source files begin with empty rows, you can skip them with this rather than hunting them down after import)
