@@ -22,14 +22,15 @@ For example:
 
 ~~~
 filename = "test.csv"
-delims = ",;"
-quotes = '"'
-lineend ="\r\n"
-headerrow =True
-startRow = 0
-testcase = CSVObject(filename, delims, quotes, lineend, headerrow, startRow)
-testcase.Import()
-print("Header = ", testcase.header)
-print("Data   = ", testcase.outdata)
-print("Column = ", testcase.ReturnColumn(4))
+delims = ",;" # Let's use two delimiters for some reason
+quotes = '"' # Double quotes
+lineend ="\r\n" # Windows line endings
+headerrow =True # There is a header row
+startRow = 0 # Start on row 0
+testcase = CSVObject(filename, delims, quotes, lineend, headerrow, startRow) # Instantiate the object
+testcase.Import() # Do an import
+print("Header = ", testcase.header) # Print the header
+print("Data   = ", testcase.outdata) # Print the data
+print("Column = ", testcase.ReturnColumn(4)) # Print a column's data
 ~~~
+Nice!
