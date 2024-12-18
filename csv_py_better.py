@@ -125,6 +125,6 @@ if __name__ == "__main__":
 	startRow = 0
 	testcase = CSVObject(filename, delims, quotes, lineend, headerrow, startRow)
 	testcase.Import()
-	print("Header = ", testcase.header)
+	print("Header = ", testcase.header, len(testcase.header))
 	print("Data   = ", testcase.outdata)
 	print("Column = ", testcase.ReturnColumn(4))
