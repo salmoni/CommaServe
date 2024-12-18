@@ -50,35 +50,19 @@ class CSVObject(object):
 		fin = codecs.open(self.fileName, encoding='utf-8')
 		data = fin.read()
 		fin.close()
-		# Figure out if the line ending is not supplied
-		if self.lineend == None:
-			lineterm = "\n"
-			lineEnds = ['\n','\r\n','\r']
-			maxes = []
-			for lineEnd in lineEnds:
-				maxes.append(self.GetMax(data, lineEnd))
-			# Select the most common line ending
-			lineTerm = lineEnds[lineEnds.index(max(lineEnds))-1]
-		# Discover the estimated number of rows (not sure if needed)
-		self.NumberRows = len(data)
-		# get delimiters
-		if self.headerrow:
-			# User has indicated there is a header row so let's get it, else ignore
-			#self.headers = self.ParseSingleLine(data[beginRow-1], delims, quotes)
-			self.NumberRows = self.NumberRows - 1 #should only count data not header row
+
 		# Convert the data into a list of lines. 
 		# This must account for newlines within quotes being treated as a cell. It's a one process thing.
-		
 		inQuote = False # flag for being 'within' quotes. We're not yet...
 		maybeLineEnding = False
 		startNewLine = False
 		token = '' # current token
 		tokens = [] # list of tokens in this line
-		rowNumber = 0
-		for char in data:
-			if maybeLineEnding == True and char == self.lineend[1]:
-				startNewLine = True
-				maybeLineEnding = False
+		rowNumber = 0 # record this to ensure we start from the right row
+		for char in data: # iterate, iterate...
+			if maybeLineEnding == True and char == self.lineend[1]: # Oh! Windows line ending second character match!
+				startNewLine = True # Set this to ensure a new line is done below
+				maybeLineEnding = False # Reset this
 			if inQuote: # so if we're in the middle of a quote...
 				if char == inQuoteChar: # ...and have a matching quote character...
 					tokens.append(token) # add the token to list (ignore quote character)
@@ -95,10 +79,10 @@ class CSVObject(object):
 			elif char in self.quotes: # But if char is a quote...
 				inQuoteChar = char # record it to check for matching quote later
 				inQuote = True # and flag that we're in a quotation
-			elif len(self.lineend) == 1 and char == self.lineend:
-				startNewLine = True
+			elif len(self.lineend) == 1 and char == self.lineend: # Non-Windows new line character?
+				startNewLine = True # Set this to start a new line below
 			elif len(self.lineend) > 1 and char == self.lineend[0]: # got first of windows line end chars
-				maybeLineEnding = True
+				maybeLineEnding = True # So we've got the first character of a Windows new line.
 			elif startNewLine == False: # And if char is anything else...
 				token += char # add to token
 
@@ -108,28 +92,27 @@ class CSVObject(object):
 				rowNumber = rowNumber + 1
 				if len(token) > 0: # Check if last item is worth recording (len > 0)
 					tokens.append(token) # add to list of tokens
-				if rowNumber >= self.startRow + 1:
-					self.outdata.append(tokens)
-				inQuote = False
-				token = ''
-				print("Reset tokens")
-				tokens = []
-		if headerrow == True:
-			self.header = self.outdata[0]
-			self.outdata.pop(0)
+				if rowNumber >= self.startRow + 1: # Do we record this row or not?
+					self.outdata.append(tokens) # Yes, we do. 
+				inQuote = False # Reset for new row
+				token = '' # Reset for new row
+				tokens = [] # Reset for new row
+		if headerrow == True: # All data read in. Is there a header?
+			self.header = self.outdata.pop(0) # If so, let's grab it from data
+			
 
 	def ReturnColumn(self, columnNumber):
 		"""
 		Returns a column of data. If cell (or indeed column), None value is substituted.
 		A nice, useful function to read in CSV files and access column data at will. 
 		"""
-		if len(self.outdata) > 0:
-			columnData = []
-			for idxRow in self.outdata:
+		columnData = []
+		if len(self.outdata) > 0: # Check if there's data
+			for idxRow in self.outdata: # Iterate through the rows
 				try:
-					columnData.append(idxRow[columnNumber])
-				except IndexError:
-					columnData.append(None)
+					columnData.append(idxRow[columnNumber]) # Append...
+				except IndexError: # But if not
+					columnData.append(None) # Add none
 		return columnData
 
 
