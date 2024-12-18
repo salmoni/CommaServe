@@ -28,11 +28,13 @@ class CSVObject(object):
 		self.fileName = fileName
 		self.delims = delims
 		self.quotes = quotes
-		self.lineend = lineend
+		if lineend != None:
+			self.lineend = lineend
+		else:
+			# use platform default
+			self.lineend = os.linesep
 		self.headerrow = headerrow # Is there a header row? 
 		self.startRow = startRow # starting row, defaults to 0
-		self.NumberCols = 0
-		self.NumberRows = 0
 		self.header = [] # actual header row
 		self.outdata = [] # stores the output data
 
