@@ -1,6 +1,3 @@
-
-
-
 """
 A CSV import module that does better than the default one. 
 
@@ -24,19 +21,20 @@ class CSVObject(object):
 	CSV files can be read more efficiently than reading the entire data
 	into memory.
 	"""
-	def __init__(self, fileName, delims, quotes, lineend, headerrow = False, startRow = 0):
+	def __init__(self, fileName, delims = ",", quotes = '"', lineEnd = None, headerRow = False, startRow = 0, encoding="utf-8"):
 		self.fileName = fileName
 		self.delims = delims
 		self.quotes = quotes
-		if lineend != None:
-			self.lineend = lineend
+		if lineEnd != None:
+			self.lineEnd = lineEnd
 		else:
 			# use platform default
-			self.lineend = os.linesep
-		self.headerrow = headerrow # Is there a header row? 
+			self.lineEnd = os.linesep
+		self.headerRow = headerRow # Is there a header row? 
 		self.startRow = startRow # starting row, defaults to 0
+		self.encoding = encoding # encoding: Defaults to UTF-8. Good idea? :-/
 		self.header = [] # actual header row
-		self.outdata = [] # stores the output data
+		self.outData = [] # stores the output data
 
 	def __iter__(self):
 		return self
@@ -47,7 +45,7 @@ class CSVObject(object):
 
 	def Import(self):
 		# Get all data into a single bundle
-		fin = codecs.open(self.fileName, encoding='utf-8')
+		fin = codecs.open(self.fileName, encoding=self.encoding)
 		data = fin.read()
 		fin.close()
 
@@ -60,7 +58,7 @@ class CSVObject(object):
 		tokens = [] # list of tokens in this line
 		rowNumber = 0 # record this to ensure we start from the right row
 		for char in data: # iterate, iterate...
-			if maybeLineEnding == True and char == self.lineend[1]: # Oh! Windows line ending second character match!
+			if maybeLineEnding == True and char == self.lineEnd[1]: # Oh! Windows line ending second character match!
 				startNewLine = True # Set this to ensure a new line is done below
 				maybeLineEnding = False # Reset this
 			if inQuote: # so if we're in the middle of a quote...
@@ -79,9 +77,9 @@ class CSVObject(object):
 			elif char in self.quotes: # But if char is a quote...
 				inQuoteChar = char # record it to check for matching quote later
 				inQuote = True # and flag that we're in a quotation
-			elif len(self.lineend) == 1 and char == self.lineend: # Non-Windows new line character?
+			elif len(self.lineEnd) == 1 and char == self.lineEnd: # Non-Windows new line character?
 				startNewLine = True # Set this to start a new line below
-			elif len(self.lineend) > 1 and char == self.lineend[0]: # got first of windows line end chars
+			elif len(self.lineEnd) > 1 and char == self.lineEnd[0]: # got first of windows line end chars
 				maybeLineEnding = True # So we've got the first character of a Windows new line.
 			elif startNewLine == False: # And if char is anything else...
 				token += char # add to token
@@ -93,12 +91,12 @@ class CSVObject(object):
 				if len(token) > 0: # Check if last item is worth recording (len > 0)
 					tokens.append(token) # add to list of tokens
 				if rowNumber >= self.startRow + 1: # Do we record this row or not?
-					self.outdata.append(tokens) # Yes, we do. 
+					self.outData.append(tokens) # Yes, we do. 
 				inQuote = False # Reset for new row
 				token = '' # Reset for new row
 				tokens = [] # Reset for new row
-		if headerrow == True: # All data read in. Is there a header?
-			self.header = self.outdata.pop(0) # If so, let's grab it from data
+		if headerRow == True: # All data read in. Is there a header?
+			self.header = self.outData.pop(0) # If so, let's grab it from data
 			
 
 	def ReturnColumn(self, columnNumber):
@@ -107,8 +105,8 @@ class CSVObject(object):
 		A nice, useful function to read in CSV files and access column data at will. 
 		"""
 		columnData = []
-		if len(self.outdata) > 0: # Check if there's data
-			for idxRow in self.outdata: # Iterate through the rows
+		if len(self.outData) > 0: # Check if there's data
+			for idxRow in self.outData: # Iterate through the rows
 				try:
 					columnData.append(idxRow[columnNumber]) # Append...
 				except IndexError: # But if not
@@ -120,11 +118,12 @@ if __name__ == "__main__":
 	filename = "test.csv"
 	delims = ",;"
 	quotes = '"'
-	lineend ="\r\n"
-	headerrow =True
+	lineEnd ="\r\n"
+	headerRow =True
 	startRow = 0
-	testcase = CSVObject(filename, delims, quotes, lineend, headerrow, startRow)
+	testcase = CSVObject(filename, delims, quotes, lineEnd, headerRow)
+	testcase.startRow = startRow
 	testcase.Import()
 	print("Header = ", testcase.header, len(testcase.header))
-	print("Data   = ", testcase.outdata)
+	print("Data   = ", testcase.outData)
 	print("Column = ", testcase.ReturnColumn(4))
