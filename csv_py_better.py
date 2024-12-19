@@ -44,7 +44,7 @@ class CSVObject(object):
 		return self.ParseLine(line)
 
 	def Import(self):
-		# Get all data into a single bundle
+		# Gets all data into a single bundle (list of lists - can be converted easily)
 		fin = codecs.open(self.fileName, encoding=self.encoding)
 		data = fin.read()
 		fin.close()
@@ -75,6 +75,7 @@ class CSVObject(object):
 				else: # if token has 0 length and no content...
 					pass # ...adjacent delimiters so do nothing
 			elif char in self.quotes: # But if char is a quote...
+				token = "" # Reset to remove starting spaces
 				inQuoteChar = char # record it to check for matching quote later
 				inQuote = True # and flag that we're in a quotation
 			elif len(self.lineEnd) == 1 and char == self.lineEnd: # Non-Windows new line character?
@@ -83,7 +84,6 @@ class CSVObject(object):
 				maybeLineEnding = True # So we've got the first character of a Windows new line.
 			elif startNewLine == False: # And if char is anything else...
 				token += char # add to token
-
 
 			if startNewLine == True:
 				startNewLine = False
@@ -97,7 +97,6 @@ class CSVObject(object):
 				tokens = [] # Reset for new row
 		if headerRow == True: # All data read in. Is there a header?
 			self.header = self.outData.pop(0) # If so, let's grab it from data
-			
 
 	def ReturnColumn(self, columnNumber):
 		"""
@@ -126,4 +125,4 @@ if __name__ == "__main__":
 	testcase.Import()
 	print("Header = ", testcase.header, len(testcase.header))
 	print("Data   = ", testcase.outData)
-	print("Column = ", testcase.ReturnColumn(4))
+	print("Column = ", testcase.ReturnColumn(0))
