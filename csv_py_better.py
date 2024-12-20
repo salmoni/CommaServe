@@ -1,19 +1,25 @@
 """
 A CSV import module that does better than the default one. 
 
+Works where "csv" and "readline" don't.
+
 Advantages:
 * Multiple delimiters
 * Multiple string definers
 * Can start at an arbitrary row
-* Allows multiple lines (e.g., new_line in the middle of a cell is not split into two cells)
+* Allows multiple lines in a cell (e.g., new_line in the middle of a cell is not split into two cells)
 
 Disadvantages:
 * It's slow. Would you rather accurate and slow or fast and wrong?
-* Not memory efficient. Moore's Law - don't fail me now!
+* Not memory efficient (reads data into a munge). Moore's Law - don't fail me now!
+
+This code could be adapted to read a file gradually and write each new line as it's 
+calculated to a file to be more efficient. This one though is made for small data.
 """
 
 from __future__ import unicode_literals
 import os, os.path, sys, codecs
+
 
 class CSVObject(object):
 	"""
@@ -35,13 +41,6 @@ class CSVObject(object):
 		self.encoding = encoding # encoding: Defaults to UTF-8. Good idea? :-/
 		self.header = [] # actual header row
 		self.outData = [] # stores the output data
-
-	def __iter__(self):
-		return self
-
-	def next(self):
-		line = self.fin.next()
-		return self.ParseLine(line)
 
 	def Import(self):
 		# Gets all data into a single bundle (list of lists - can be converted easily)
