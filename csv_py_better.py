@@ -60,30 +60,27 @@ class CSVObject(object):
 			if maybeLineEnding == True and char == self.lineEnd[1]: # Oh! Windows line ending second character match!
 				startNewLine = True # Set this to ensure a new line is done below
 				maybeLineEnding = False # Reset this
-			if inQuote: # so if we're in the middle of a quote...
+			if inQuote: # We're in the middle of a quote...
 				if char == inQuoteChar: # ...and have a matching quote character...
 					tokens.append(token) # add the token to list (ignore quote character)
 					token = '' # and begin new token
 					inQuote = False # flag that we're not in a quote any more
 				else: # But if char is a non-matching quote...
-					token += char # ...just add to token
+					token += char # ... add char to token
 			elif char in self.delims: # or if char is a delimiter...
-				if len(token) > 0: # ...and token is worth recording...
-					tokens.append(token) # add token to list
-					token = '' # and begin new token
-				else: # if token has 0 length and no content...
-					pass # ...adjacent delimiters so do nothing
+				tokens.append(token) # add token to list
+				token = '' # and begin new token
 			elif char in self.quotes: # But if char is a quote...
 				token = "" # Reset to remove starting spaces
-				inQuoteChar = char # record it to check for matching quote later
-				inQuote = True # and flag that we're in a quotation
+				inQuoteChar = char # record it to check for matching quote later (remember multiple quote chars?)
+				inQuote = True # and flag that we're now in a quotation
 			elif len(self.lineEnd) == 1 and char == self.lineEnd: # Non-Windows new line character?
 				startNewLine = True # Set this to start a new line below
 			elif len(self.lineEnd) > 1 and char == self.lineEnd[0]: # got first of windows line end chars
 				maybeLineEnding = True # So we've got the first character of a Windows new line.
 			elif startNewLine == False: # And if char is anything else...
 				token += char # add to token
-
+			# We now have a complete single line here
 			if startNewLine == True:
 				startNewLine = False
 				rowNumber = rowNumber + 1
