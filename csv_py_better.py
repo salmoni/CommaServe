@@ -1,5 +1,5 @@
 """
-A CSV import module that does better than the default one. 
+A CSV import module that does better than the default one.
 
 Works where "csv" and "readline" don't.
 
@@ -13,7 +13,7 @@ Disadvantages:
 * It's slow. Would you rather accurate and slow or fast and wrong?
 * Not memory efficient (reads data into a munge). Moore's Law - don't fail me now!
 
-This code could be adapted to read a file gradually and write each new line as it's 
+This code could be adapted to read a file gradually and write each new line as it's
 calculated to a file to be more efficient. This one though is made for small data.
 """
 
@@ -36,7 +36,7 @@ class CSVObject(object):
 		else:
 			# use platform default
 			self.lineEnd = os.linesep
-		self.headerRow = headerRow # Is there a header row? 
+		self.headerRow = headerRow # Is there a header row?
 		self.startRow = startRow # starting row, defaults to 0
 		self.encoding = encoding # encoding: Defaults to UTF-8. Good idea? :-/
 		self.header = [] # actual header row
@@ -48,7 +48,7 @@ class CSVObject(object):
 		data = fin.read()
 		fin.close()
 
-		# Convert the data into a list of lines. 
+		# Convert the data into a list of lines.
 		# This must account for newlines within quotes being treated as a cell. It's a one process thing.
 		inQuote = False # flag for being 'within' quotes. We're not yet...
 		maybeLineEnding = False
@@ -90,7 +90,7 @@ class CSVObject(object):
 				if len(token) > 0: # Check if last item is worth recording (len > 0)
 					tokens.append(token) # add to list of tokens
 				if rowNumber >= self.startRow + 1: # Do we record this row or not?
-					self.outData.append(tokens) # Yes, we do. 
+					self.outData.append(tokens) # Yes, we do.
 				inQuote = False # Reset for new row
 				token = '' # Reset for new row
 				tokens = [] # Reset for new row
@@ -100,7 +100,7 @@ class CSVObject(object):
 	def ReturnColumn(self, columnNumber):
 		"""
 		Returns a column of data. If cell (or indeed column), None value is substituted.
-		A nice, useful function to read in CSV files and access column data at will. 
+		A nice, useful function to read in CSV files and access column data at will.
 		"""
 		columnData = []
 		if len(self.outData) > 0: # Check if there's data
