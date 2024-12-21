@@ -21,6 +21,16 @@ from __future__ import unicode_literals
 import os, os.path, sys, codecs
 
 
+def makeNumber(valueString):
+	try:
+		returnVal = int(valueString)
+	except ValueError:
+		try:
+			returnVal = float(valueString)
+		except ValueError:
+			returnVal = valueString
+	return returnVal
+
 def ReadWholeCSV(fileName, delims=",", quotes='"', lineEnd=None, headerRow=False, startRow=0, encoding="utf-8"):
 	"""
 	Reads the whole of a file and attempts to return it as a list of lists 
@@ -52,6 +62,7 @@ def ReadWholeCSV(fileName, delims=",", quotes='"', lineEnd=None, headerRow=False
 			else: # But if char is a non-matching quote...
 				token += char # ... add char to token
 		elif char in delims: # or if char is a delimiter...
+			token = makeNumber(token)
 			tokens.append(token) # add token to list
 			token = '' # and begin new token
 		elif char in quotes: # But if char is a quote...
@@ -166,6 +177,7 @@ class CSVObject(object):
 					else: # But if char is a non-matching quote...
 						token += char # ... add char to token
 				elif char in self.delims: # or if char is a delimiter...
+					token = makeNumber(token)
 					tokens.append(token) # add token to list
 					token = '' # and begin new token
 				elif char in self.quotes: # But if char is a quote...
