@@ -40,9 +40,8 @@ def ReadWholeCSV(fileName, delims=",", quotes='"', lineEnd=None, headerRow=False
 	fin = codecs.open(fileName, encoding=encoding)
 	data = fin.read()
 	fin.close()
-
 	# Convert the data into a list of lines.
-	# This must account for newlines within quotes being treated as a cell. It's a one process thing.
+	# This must account for newlines within quotes being treated as a cell. It's a one pass process.
 	outData = [] # Stores all the data
 	inQuote = False # flag for being 'within' quotes. We're not yet...
 	maybeLineEnding = False
