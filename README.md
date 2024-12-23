@@ -42,4 +42,6 @@ data = CommaServe.CSVObject(filename, delims, quotes, lineEnd, headerRow, startR
 for row in data:
     print(row)
 ~~~
+For this one, the file is opened and then closed for each line read. This is slow but you might want to do complex operations that take time before the next line is read. This saves the file being left open. 
+
 Nice!
